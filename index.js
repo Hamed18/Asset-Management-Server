@@ -25,6 +25,15 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+	// CREATE: send user input data from server to database. client: Join As HR
+	const UsersCollection = client.db("Assets").collection("Users");
+	app.post('/addUser', async(req,res) => {
+		const newUser = req.body;
+		console.log(newUser);
+		const result = await UsersCollection.insertOne(newUser);
+		res.send(result);
+	})
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
