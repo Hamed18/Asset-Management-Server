@@ -1,7 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
+const { MongoClient, ServerApiVersion } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -17,7 +17,7 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 async function run() {
@@ -25,18 +25,32 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-	// CREATE: send user input data from server to database. client: Join As HR
-	const UsersCollection = client.db("Assets").collection("Users");
-	app.post('/addUser', async(req,res) => {
-		const newUser = req.body;
-		console.log(newUser);
-		const result = await UsersCollection.insertOne(newUser);
-		res.send(result);
-	})
+    // CREATE: send user input data from server to database. client: Join As HR
+    const UsersCollection = client.db("Assets").collection("Users");
+    app.post("/addUser", async (req, res) => {
+      const newUser = req.body;
+      console.log(newUser);
+      const result = await UsersCollection.insertOne(newUser);
+      res.send(result);
+    });
+
+    // load data by email 
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      console.log(req.query.email);
+      let query = { email : email };
+      /*	if (req.query?.email){
+			query = {email : req.query.email}
+		}  */
+      const result = await UsersCollection.find(query).toArray();
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     // Ensures that the client will close when you finish/error
     //await client.close();
@@ -44,10 +58,9 @@ async function run() {
 }
 run().catch(console.dir);
 
-
-app.get('/', (req,res) => {
-	res.send('Asset Management server is running')
-})
+app.get("/", (req, res) => {
+  res.send("Asset Management server is running");
+});
 app.listen(port, () => {
-	console.log(`Asset Management is running on port ${port}`)
-})
+  console.log(`Asset Management is running on port ${port}`);
+});
