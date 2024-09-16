@@ -34,16 +34,21 @@ async function run() {
       res.send(result);
     });
 
+    // // READ: get data from db. 
+    // app.get('/users', async(req,res) => {
+    //   const cursor = UsersCollection.find();
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // })
+
     // load data by email 
     app.get("/users/:email", async (req, res) => {
       const email = req.params.email;
-      console.log(req.query.email);
+      console.log('requested email',email);
       let query = { email : email };
-      /*	if (req.query?.email){
-			query = {email : req.query.email}
-		}  */
-      const result = await UsersCollection.find(query).toArray();
-      res.send(result);
+      const result = await UsersCollection.findOne(query);
+      res.json(result);
+      console.log("email query",result);
     });
 
     // Send a ping to confirm a successful connection
